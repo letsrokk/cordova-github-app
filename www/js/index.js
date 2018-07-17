@@ -127,8 +127,11 @@ var Fsm = machina.Fsm.extend({
 
     this.openBrowser();
 
-    if (navigator.splashscreen) navigator.splashscreen.hide();
-    this.load(LANDING_URL, "loading");
+    // on iOS doing state transition after ending this handler avoids state transitions being messed up
+    setTimeout(function() {
+      if (navigator.splashscreen) navigator.splashscreen.hide();
+      this.load(LANDING_URL, "loading");
+    }.bind(this), 0);
   },
 
   load: function(url, messageCode) {
@@ -173,15 +176,19 @@ var Fsm = machina.Fsm.extend({
     if (e.url.match(/^app:\/\/mobile-scan\b/)) {
       // open mobile scan
       var params = parseQueryString(e.url) || {};
-      this.openScan(params.ret, !!params.redirect);
+      setTimeout(function() {
+        this.openScan(params.ret, !!params.redirect);
+      }.bind(this), 0);
     } else if (parts) {
       var base = parts[1], path = parts[2];
       if ((base + path).match(this.localUrlRe) || ((!base || base === BASE_URL) && path.match(this.localUrlRe))) {
         // Internal link followed.
         debug("opening internal link: " + e.url);
         this.appLastUrl = e.url;
-        this.transition("loading", null);
         cb(e.url);
+        setTimeout(function() {
+          this.transition("loading", null);
+        }.bind(this), 0);
       } else {
         // External link opened.
         this.openSystemBrowser(e.url);
