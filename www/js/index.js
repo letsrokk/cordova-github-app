@@ -27,7 +27,7 @@ var LANDING_URL= "https://thequestionmark.github.io/cordova-web-wrap/";
 var LOCAL_URLS = "/*";
 
 
-// Regular expression for parsing full URLs, returning: base, path, query, hash.
+// Regular expression for parsing URLs, returning: base, path, query, hash.
 var SPLIT_URL_RE = /^([^:/]+:\/\/[^/]+)(\/[^?]*)(?:\?([^#]*))?(?:#(.*))?$/i;
 // Base URL for matching, derived from LANDING_URL (without trailing slash).
 var BASE_URL     = LANDING_URL.match(SPLIT_URL_RE)[1];
@@ -53,11 +53,12 @@ var Fsm = machina.Fsm.extend({
 
     // Load the page we want to show.
     "loading": {
-      _onEnter        : function(e) { this.onLoading(e); },
-      "app.loadstop"  : "loaded",
-      "app.loaderror" : "failed",
-      "pause"         : "paused",
-      "conn.offline"  : "offline.blank",
+      _onEnter         : function(e)     { this.onLoading(e); },
+      "app.beforeload" : function(e, cb) { this.onNavigate(e, cb); },
+      "app.loadstop"   : "loaded",
+      "app.loaderror"  : "failed",
+      "pause"          : "paused",
+      "conn.offline"   : "offline.blank",
     },
 
     // Paused during page load.
@@ -71,10 +72,10 @@ var Fsm = machina.Fsm.extend({
 
     // Page was succesfully loaded in the inAppBrowser.
     "loaded": {
-      _onEnter        : function()  { this.onLoaded(); },
-      "app.loadstart" : function(e) { this.onNavigate(e); },
-      "app.exit"      : function()  { this.onBrowserBack(); }, // top of navigation and back pressed
-      "conn.offline"  : "offline.loaded",
+      _onEnter         : function()      { this.onLoaded(); },
+      "app.beforeload" : function(e, cb) { this.onNavigate(e, cb); },
+      "app.exit"       : function()      { this.onBrowserBack(); }, // top of navigation and back pressed
+      "conn.offline"   : "offline.loaded",
     },
 
     // Page load failed.
@@ -133,10 +134,8 @@ var Fsm = machina.Fsm.extend({
   load: function(url, messageCode) {
     var _url = url || this.appLastUrl || LANDING_URL;
 
+    this.transition("loading", messageCode);
     this.appLastUrl = _url;
-
-    // if no code is given, it means: keep the same message as before (relevant for e.g. redirects)
-    if (messageCode) this.showMessage(messageCode);
 
     if (!this.app) {
       // When there is no inAppBrowser yet, open it.
@@ -147,7 +146,6 @@ var Fsm = machina.Fsm.extend({
       debug("load existing: " + _url);
       this.app.executeScript({ code: "window.location.assign(" + JSON.stringify(_url) + ");" });
     }
-    this.transition("loading", messageCode);
   },
 
   onLoading: function(messageCode) {
@@ -165,58 +163,32 @@ var Fsm = machina.Fsm.extend({
     }, function(localUrls) {
       if (localUrls && localUrls[0]) this.setLocalUrls(localUrls[0]);
     }.bind(this));
-    // Catch links that were clicked to route external ones through our custom protocol.
-    // We'd rather not do this in the loadstart event, because the page then already started loading.
-    this.app.executeScript({ code:
-      'window.addEventListener("click", function(e) {\n' +
-      '  if (e.target.tagName !== "A") return;\n' +
-      '  var href = e.target.href;\n' +
-      '  if (!href || href.startsWith("app:")) return;\n' +
-      '  var BASE_URL     = ' + JSON.stringify(BASE_URL) + ';\n' +
-      '  var SPLIT_URL_RE = ' + SPLIT_URL_RE.toString() + ';\n' +
-      '  var localUrlRe   = ' + this.localUrlRe.toString() + ';\n' +
-      '  var parts = href.match(SPLIT_URL_RE);\n' +
-      '  var base = parts[1], path = parts[2];\n' +
-      '  if (!(base + path).match(localUrlRe) && !(base === BASE_URL && path.match(localUrlRe))) {\n' +
-      '    e.preventDefault();\n' +
-      '    window.location.assign("app://open?url=" + encodeURIComponent(href));\n' +
-      '  }\n' +
-      '});\n' +
-      'console.log("installed click event listener for external links");\n'
-    });
     // Show the page.
     this.showMessage(null);
     this.app.show();
   },
 
-  onNavigate: function(e) {
+  onNavigate: function(e, cb) {
     var parts = e.url.match(SPLIT_URL_RE);
-    var base = parts[1], path = parts[2];
-    if ((base + path).match(this.localUrlRe) || (base === BASE_URL && path.match(this.localUrlRe))) {
-      // Internal link followed.
-      debug("opening internal link: " + e.url);
-      this.appLastUrl = e.url;
-      this.transition("loading", null);
-    } else {
-      // External link opened. Should be unreachable code because of the onLoaded() code injection,
-      // but might happen if javascript opens a link (e.g. embedded Google Map).
-      debug("opening external link (not caught on page): " + e.url);
-      this.openSystemBrowser(e.url);
-      // Cancel navigation of inAppBrowser. This is a bit of a hack, so the event listener
-      // installed in onLoaded is preferable (which also avoids the initial request).
-      this.app.executeScript({ code: 'window.location.replace(window.location);' });
-    }
-  },
-
-  onCustomScheme: function(e) {
-    debug("custom scheme: " + e.url);
     if (e.url.match(/^app:\/\/mobile-scan\b/)) {
+      // open mobile scan
       var params = parseQueryString(e.url) || {};
       this.openScan(params.ret, !!params.redirect);
-    } else if (e.url.match(/^app:\/\/open\b/)) {
-      var url = parseQueryString(e.url).url;
-      debug("opening external link:" + url);
-      this.openSystemBrowser(url);
+    } else if (parts) {
+      var base = parts[1], path = parts[2];
+      if ((base + path).match(this.localUrlRe) || ((!base || base === BASE_URL) && path.match(this.localUrlRe))) {
+        // Internal link followed.
+        debug("opening internal link: " + e.url);
+        this.appLastUrl = e.url;
+        this.transition("loading", null);
+        cb(e.url);
+      } else {
+        // External link opened.
+        this.openSystemBrowser(e.url);
+      }
+    } else {
+      // Don't interfere with unrecognized urls.
+      cb(e.url);
     }
   },
 
@@ -243,16 +215,17 @@ var Fsm = machina.Fsm.extend({
 
   openBrowser: function(url) {
     var _url = url || this.appLastUrl || LANDING_URL;
-    this.app = cordova.InAppBrowser.open(_url, "_blank", "location=no,zoom=no,shouldPauseOnSuspend=yes,toolbar=no,hidden=yes");
+    this.app = cordova.InAppBrowser.open(_url, "_blank", "location=no,zoom=no,shouldPauseOnSuspend=yes,toolbar=no,hidden=yes,beforeload=yes");
     // Get info from inAppBrowser events. No actions, just saving state and logging.
     this.app.addEventListener("loadstop",     function(e) { this.appLastUrl = e.url; }.bind(this), false);
     this.app.addEventListener("loaderror",    function(e) { debug("page load failed: " + e.message); }, false);
+    this.app.addEventListener("beforeload",   function(e) { debug("app.beforeload: " + e.url); }, false);
     // Connect state-machine to inAppBrowser events.
+    this.app.addEventListener("beforeload",   this.handle.bind(this, "app.beforeload"), false);
     this.app.addEventListener("loadstart",    this.handle.bind(this, "app.loadstart"), false);
     this.app.addEventListener("loadstop",     this.handle.bind(this, "app.loadstop"), false);
     this.app.addEventListener("loaderror",    this.handle.bind(this, "app.loaderror"), false);
     this.app.addEventListener("exit",         this.handle.bind(this, "app.exit"), false);
-    this.app.addEventListener("customscheme", this.onCustomScheme.bind(this), false);
   },
 
   openSystemBrowser: function(url) {

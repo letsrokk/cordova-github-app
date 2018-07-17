@@ -9,8 +9,9 @@
   },
   "author": "wvengen",
   "dependencies": {
+    "cordova-android": "^7.0.0",
     "cordova-plugin-app-launcher": "^0.4.0",
-    "cordova-plugin-inappbrowser": "git+https://github.com/q-m/cordova-plugin-inappbrowser.git#2eacaa",
+    "cordova-plugin-inappbrowser": "https://github.com/q-m/cordova-plugin-inappbrowser.git#all-features-for-web-wrap",
     "cordova-plugin-network-information": "^2.0.1",
     "cordova-plugin-whitelist": "^1.3.3",
     "phonegap-plugin-barcodescanner": "^7.1.2"

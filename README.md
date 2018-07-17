@@ -70,13 +70,6 @@ links on your website would be opened in the system web browser.
 This attribute can also be set by the website by any element with a `data-app-local-urls`
 attribute (so the website can evolve without having to update this setting in the app).
 
-It may be useful to know that there are two ways in which this is implemented. The first
-one applies to `a` elements only. After a page has loaded, an event listener is installed
-which disables navigation for external links and invokes the system web browser. The second
-method kicks in when a script navigates to an external link (e.g. an embedded Google Map),
-but this only happens _after_ the internal web browser has started loading the URL. This
-request is then cancelled.
-
 ## Barcode scanner
 
 The website can initiate a barcode scan by pointing to the custom url `app://mobile-scan`.
@@ -140,9 +133,9 @@ there after a machina upgrade, check if a missing method is used):
 ## Notes
 
 - Opening external links can be improved after [CB-14188](https://issues.apache.org/jira/browse/CB-14188) is implemented.
-- A [custom inAppBrowser](https://github.com/q-m/cordova-plugin-inappbrowser/tree/feature/allowedschemes-ios) is used that
-  supports `AllowedSchemes` on iOS, it can be reverted to the official plugin when
-  [CB-14187](https://issues.apache.org/jira/browse/CB-14187) / [PR #274](https://github.com/apache/cordova-plugin-inappbrowser/pull/274)
+- A [custom inAppBrowser](https://github.com/q-m/cordova-plugin-inappbrowser/tree/all-features-for-web-wrap) is used that
+  supports the `beforeload` event, it can be reverted to the official plugin when
+  [CB-14188](https://issues.apache.org/jira/browse/CB-14188) / [PR #276](https://github.com/apache/cordova-plugin-inappbrowser/pull/276)
   is released.
 - If the inAppBrowser would support opening external links without messing up the internal inAppBrowser, the
   app-launcher plugin could be removed (see also [CB-13198](https://issues.apache.org/jira/browse/CB-13198)).
