@@ -14,6 +14,7 @@ Desktop.ini
 default.properties
 local.properties
 gen
+package-lock.json
 
 # cordova
 /platforms
