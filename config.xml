@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.github.letsrokk" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Cordova Google App</name>
-    <description>An example Cordova app wrapping Google.com</description>
+    <name>Cordova The Internet App</name>
+    <description>An example Cordova app wrapping The Internet app</description>
     <author email="mayer.dmitry@gmail.com" href="https://github.com/letsrokk/">letsrokk</author>
     <content src="index.html" />
     <allow-intent href="http://*/*" />
