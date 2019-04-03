@@ -1,8 +1,8 @@
 {
-  "name": "com.github.letsrokk",
-  "displayName": "Cordova The Internet App",
+  "name": "com.github.letsrokk.cordova.github",
+  "displayName": "Cordova GitHub App",
   "version": "1.0.0",
-  "description": "An example Cordova app wrapping The Internet app",
+  "description": "An example Cordova app wrapping GitHub",
   "homepage": "https://github.com/letsrokk/cordova-web-wrap",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -11,17 +11,22 @@
   },
   "author": "letsrokk",
   "dependencies": {
+    "cordova-android": "^8.0.0",
     "cordova-icon": "^1.0.0",
+    "cordova-ios": "^5.0.0",
     "cordova-plugin-app-launcher": "^0.4.0",
-    "cordova-plugin-inappbrowser": "git+https://github.com/letsrokk/cordova-plugin-inappbrowser.git#757022d",
-    "cordova-plugin-network-information": "^2.0.1"
+    "cordova-plugin-network-information": "^2.0.1",
+    "cordova-plugin-whitelist": "^1.3.3"
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-inappbrowser": {},
       "cordova-plugin-network-information": {},
-      "cordova-plugin-app-launcher": {}
+      "cordova-plugin-app-launcher": {},
+      "cordova-plugin-whitelist": {}
     },
-    "platforms": []
+    "platforms": [
+      "android",
+      "ios"
+    ]
   }
 }

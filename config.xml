@@ -1,22 +1,31 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.github.letsrokk" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Cordova The Internet App</name>
-    <description>An example Cordova app wrapping The Internet app</description>
+<widget id="com.github.letsrokk.cordova.github" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Cordova GitHub App</name>
+    <description>An example Cordova app wrapping GitHub</description>
     <author email="mayer.dmitry@gmail.com" href="https://github.com/letsrokk/">letsrokk</author>
+
     <content src="index.html" />
+
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="mailto:*" />
+
+    <allow-navigation href="http://*" />
+    <allow-navigation href="https://*" />
+
     <platform name="ios">
         <icon src="res/icon_1024.png" />
         <splash src="res/icon_2208.png"/>
     </platform>
+
     <platform name="android">
         <icon src="res/icon.png" />
     </platform>
+
     <preference name="AppendUserAgent" value=" CordovaApp" />
     <preference name="AllowedSchemes" value="app" />
-    <plugin name="cordova-plugin-inappbrowser" spec="git+https://github.com/letsrokk/cordova-plugin-inappbrowser.git#757022d" />
+
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <plugin name="cordova-plugin-network-information" spec="^2.0.1" />
     <plugin name="cordova-plugin-app-launcher" spec="^0.4.0" />
 </widget>
