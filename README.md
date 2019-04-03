@@ -1,7 +1,7 @@
-# Cordova Google App
+# Cordova The Internet App
 
-Forked from [cordova-web-wrap](https://github.com/q-m/cordova-web-wrap), Cordova Google App is a simple wrapper 
-app around https://google.com meant to be used as example app for [Driver Factory](https://github.com/letsrokk/driver-factory)
+Forked from [cordova-web-wrap](https://github.com/q-m/cordova-web-wrap), Cordova The Internet App is a simple wrapper 
+app around [The Internet](https://the-internet.herokuapp.com) app meant to be used as example app for [Driver Factory](https://github.com/letsrokk/driver-factory)
 project   
 
 ## Build
