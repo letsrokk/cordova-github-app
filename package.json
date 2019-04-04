@@ -3,7 +3,7 @@
   "displayName": "Cordova GitHub App",
   "version": "1.0.0",
   "description": "An example Cordova app wrapping GitHub",
-  "homepage": "https://github.com/letsrokk/cordova-web-wrap",
+  "homepage": "https://github.com/letsrokk/cordova-github-app",
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
