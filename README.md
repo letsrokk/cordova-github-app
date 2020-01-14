@@ -9,7 +9,7 @@ project
 1. [Install Cordova](http://cordova.apache.org/docs/en/latest/guide/cli/index.html): `npm install -g cordova`
 2. [Add platforms](https://cordova.apache.org/docs/en/latest/guide/cli/index.html#add-platforms): `cordova platform add android` and/or `cordova platform add ios`.
 3. [Check (and install) requirements](https://cordova.apache.org/docs/en/latest/guide/cli/index.html#install-pre-requisites-for-building): `cordova requirements`
-4. [Build](https://cordova.apache.org/docs/en/latest/guide/cli/index.html#build-the-app): `cordova build`
+4. [Build](https://cordova.apache.org/docs/en/latest/guide/cli/index.html#build-the-app): `cordova build ios --device` and/or `cordova build android`
 
 ## License
 
