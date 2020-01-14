@@ -19,3 +19,7 @@ package-lock.json
 # cordova
 /platforms
 /plugins
+
+# intellij
+.idea
+*.iml
